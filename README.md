@@ -1,6 +1,6 @@
 # Attio for VC teams: the data model in one run
 
-This repo builds a venture fund's CRM in an empty Attio workspace: 2 new objects, 37 attributes across 5 objects (4 of them two-way links), 3 lists with 13 list attributes, and an 8-stage deal pipeline. It runs from a GitHub Action, so your Attio token never sits in code, in chat or on your screen.
+This repo builds a venture fund's CRM in an empty Attio workspace: 2 new objects, 36 attributes across 5 objects (4 of them two-way links), 3 lists with 13 list attributes, and an 8-stage deal pipeline. It runs from a GitHub Action, so your Attio token never sits in code, in chat or on your screen.
 
 It was built live on [Craftt Live, episode 2](https://www.craftt.io/webinars), 23 Oct 2026. The full spec is in [DATA_MODEL.md](DATA_MODEL.md).
 
@@ -10,7 +10,7 @@ It was built live on [Craftt Live, episode 2](https://www.craftt.io/webinars), 2
 |---|---|
 | Companies | Company type (Startup, LP, Co-investor, Service provider), Sector, Funding stage, HQ country, Founded year, Total raised, Last round date, Source, Referred by |
 | People | Role (Founder, LP contact, Co-investor partner, Angel, Advisor), Warm intro strength |
-| Deals | Stages Sourced → First call → Partner meeting → Diligence → IC → Term sheet → Invested / Passed, with target time per stage. Round, Round size, Our check, Pre-money, Lead investor, Fund, Deal lead, Source, Pass reason, Next step date |
+| Deals | Stages Sourced → First call → Partner meeting → Diligence → IC → Term sheet → Invested / Passed, with target time per stage. Round, Round size, Our check, Pre-money, Lead investor, Fund, Deal owner (Attio's standard owner), Source, Pass reason, Next step date |
 | Funds (new object) | Name, Vintage, Fund size, Status, Strategy |
 | Investments (new object) | One record per cheque: Company, Fund, Deal, Round, Instrument, Date, Amount, Ownership %, Fair value, Board seat |
 | Lists | Portfolio (health, board owner, last update, runway), Fund II fundraise (LP stages and amounts), Co-investor network |
@@ -33,7 +33,7 @@ Attio → Workspace settings → Developers → **New access token**. Name it `v
 | List configuration | Read-write | lists and list attributes |
 | Records | Read-write | seed only |
 | List entries | Read-write | seed only |
-| User management | Read | seed only, to assign deal leads |
+| User management | Read | seed only, to assign deal owners |
 
 Attio shows the token once. If you are sharing your screen, stop sharing before you click Create, and copy it straight to the clipboard.
 

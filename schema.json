@@ -446,14 +446,6 @@
           }
         },
         {
-          "title": "Deal lead",
-          "api_slug": "deal_lead",
-          "type": "actor-reference",
-          "description": "The partner who owns the deal.",
-          "is_multiselect": false,
-          "config": {}
-        },
-        {
           "title": "Source",
           "api_slug": "deal_source",
           "type": "select",

@@ -292,7 +292,7 @@ class Seeder:
             d["next_step"] = str(self.today + dt.timedelta(days=rng.randint(-10, 14)))
 
         def make_deal(d):
-            v = {"name": d["name"], "stage": d["stage"], "owner": actor(d["owner"]), "deal_lead": actor(d["owner"]),
+            v = {"name": d["name"], "stage": d["stage"], "owner": actor(d["owner"]),
                  "value": d["our_check"], "associated_company": ref("companies", cid[d["company"]]),
                  "associated_people": [x for p in founders.get(d["company"], []) for x in ref("people", p)],
                  "round": d["round"], "round_size": d["round_size"], "our_check": d["our_check"],

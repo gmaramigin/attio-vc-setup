@@ -11,9 +11,9 @@ The fund in the demo is **Northwind Ventures**: a seed and Series A fund, Fund I
 | Workspace | Used in | State before the stream |
 |---|---|---|
 | `Northwind VC (live)` | Block 2 | Empty. Claude builds the model on air. |
-| `Northwind VC (ready)` | Blocks 3–5 | Same schema, seeded on 13 Oct, drifted daily, so stage history and "time in stage" are real by the 23rd. |
+| `Northwind VC (ready)` | Blocks 3–5 | Same schema, seeded on 13 Oct with backdated stage history, drifted daily until the 22nd. |
 
-Attio cannot backdate status history, so a workspace built on the night has no history to report on. That is why the second workspace exists. Say so on air.
+`seed.py` backdates stage history through Attio's write-values endpoint with `replace_history: true` (beta), so time-in-stage reports have months of data on seed day. The live workspace is still empty on the night, and a model built on air has no history to report on. That is why the second workspace exists. If the beta endpoint refuses, `seed.py` falls back to plain stage writes, history starts on seed day, and the ready workspace is 10 days old by the 23rd. Say so on air.
 
 ## Objects
 
@@ -53,7 +53,7 @@ One deal = one company raising one round that we are looking at.
 | Pre-money valuation | `pre_money` | currency USD | |
 | Lead investor | `lead_investor` | record ref → Companies | one-way |
 | Fund | `fund` | record ref → Funds | two-way, many deals → one fund (reverse `deals` on Funds) |
-| Deal lead | `deal_lead` | actor reference (workspace member) | |
+| Deal owner | `owner` (standard) | actor reference (workspace member) | The partner who owns the deal. Required on every deal. |
 | Source | `deal_source` | select | same options as Companies · Source |
 | Pass reason | `pass_reason` | select | Team · Market size · Valuation · Traction · Outside thesis · Lost to competitor |
 | Next step date | `next_step_date` | date | |
@@ -116,18 +116,18 @@ One record = one cheque. A follow-on is a second record.
 | Typical check | `typical_check` | currency USD | |
 
 ## Views (block 3)
-- Deals · **Pipeline** kanban by Stage. Card: Associated company, Round, Our check, Deal lead, Next step date. Column sum on Our check.
-- Deals · **My deals** table, filter Deal lead = me, Stage not Invested/Passed, sort Next step date.
+- Deals · **Pipeline** kanban by Stage. Card: Associated company, Round, Our check, Deal owner, Next step date. Column sum on Our check.
+- Deals · **My deals** table, filter Deal owner = me, Stage not Invested/Passed, sort Next step date.
 - Deals · **Passed, last 90 days** table, filter Stage = Passed, grouped by Pass reason.
 - Portfolio · table grouped by Health, columns Board owner, Last update received, Runway.
 - Portfolio · **Update overdue** filter Last update received older than 45 days.
 - Fund II fundraise · kanban by Stage, column sums on Target ticket and Committed amount.
-- Record page: Companies highlights Company type, Funding stage, Sector, Total raised, Source. Deals highlights Stage, Round, Our check, Deal lead, Fund. Investments highlights Amount, Fair value, MOIC, Ownership.
+- Record page: Companies highlights Company type, Funding stage, Sector, Total raised, Source. Deals highlights Stage, Round, Our check, Deal owner, Fund. Investments highlights Amount, Fair value, MOIC, Ownership.
 
 ## Automations (block 4)
-1. **Deal reaches IC** → task "Write IC memo" for Deal lead, due +2 days → Slack message to #ic with the deal link.
+1. **Deal reaches IC** → task "Write IC memo" for Deal owner, due +2 days → Slack message to #ic with the deal link.
 2. **Passed needs a reason** → object Rule on Deals: Stage = Passed requires Pass reason. Then a workflow: task "Send pass note to founder" due +1 day. (Rules apply to UI edits only, the API bypasses them.)
-3. **Invested** → create Investments record linked to the deal, company and fund → add company to Portfolio with Health = On track and Board owner = Deal lead.
+3. **Invested** → create Investments record linked to the deal, company and fund → add company to Portfolio with Health = On track and Board owner = Deal owner.
 4. **Monthly update chase** → recurring, 1st of the month: Portfolio entries with Last update received older than 45 days → task for Board owner.
 5. **LP committed** → Slack message to #fundraise with amount, and a task to send the subscription docs.
 
@@ -143,7 +143,7 @@ One record = one cheque. A follow-on is a second record.
 The seed plants these, and `stats.py` re-counts them before the stream:
 - 180 deals: Sourced 52 · First call 34 · Partner meeting 22 · Diligence 14 · IC 6 · Term sheet 3 · Invested 24 · Passed 25.
 - Warm intro deals reach Partner meeting about 4× as often as Inbound.
-- 9 deals entered Diligence on seed day and never moved, so they top the time-in-stage report. History starts on 13 Oct, so no deal can pass a 30-day target by the 23rd. On air, say the workspace is 10 days old and that in a real fund this report gets sharper every week.
+- 9 deals have sat in Diligence for 38–70 days, past the 30-day target, and top the time-in-stage report. `seed.py` backdates their history (beta endpoint, `replace_history: true`), and `drift.py` never moves them. Fallback, if the endpoint refuses: they enter Diligence on seed day, no deal can pass a 30-day target by the 23rd, and on air you say the workspace is 10 days old. `seed.py` prints which mode ran.
 - 7 of 24 portfolio companies have not sent an update in 45+ days, 3 of them with runway under 9 months.
 - Fund II: $75M target, $31M soft-circled, $18M committed.
 - 6 deals in Passed have no Pass reason (made before the Rule existed).
