@@ -1,19 +1,16 @@
 # VC data model for Attio: the single source of truth
 
-Episode 2 of Craftt Live: "How to build Attio for VC teams". Fri 23 Oct 2026, 19:00 Tashkent.
+Episode 2 of Craftt Live: "How to build Attio for VC teams". Thu 22 Oct 2026, 19:00 Tashkent.
 Every other file in this folder (FigJam board, schema.json, seed, script, announcements) follows this spec.
 Change it here first.
 
 The fund in the demo is **Northwind Ventures**: a seed and Series A fund, Fund I (2021, $40M, investing out of reserves) and Fund II (2026, $75M target, raising now).
 
-## Two workspaces
+## One workspace, built on air
 
-| Workspace | Used in | State before the stream |
-|---|---|---|
-| `Northwind VC (live)` | Block 2 | Empty. Claude builds the model on air. |
-| `Northwind VC (ready)` | Blocks 3–5 | Same schema, seeded on 13 Oct with backdated stage history, drifted daily until the 22nd. |
+`Northwind VC` on Pro, Deals switched on, otherwise empty. On the stream the GitHub Action runs `schema` (Claude's build), then `seed` loads the fictional fund, and blocks 3–5 run on that data. Nothing is built in advance except the FigJam board.
 
-`seed.py` backdates stage history through Attio's write-values endpoint with `replace_history: true` (beta), so time-in-stage reports have months of data on seed day. The live workspace is still empty on the night, and a model built on air has no history to report on. That is why the second workspace exists. If the beta endpoint refuses, `seed.py` falls back to plain stage writes, history starts on seed day, and the ready workspace is 10 days old by the 23rd. Say so on air.
+`seed.py` backdates stage history through Attio's write-values endpoint with `replace_history: true` (beta), so time-in-stage reports have months of data straight after the seed. If the endpoint refuses, `seed.py` falls back to plain stage writes: every deal entered its stage today, and the time-in-stage report is flat. `seed.py` prints which mode ran.
 
 ## Objects
 
@@ -139,11 +136,11 @@ One record = one cheque. A follow-on is a second record.
 5. Fund II: sum of Committed amount vs Target ticket by LP stage.
 6. Investments: sum of Current fair value and Amount invested by Fund.
 
-## Seeded story (ready workspace)
-The seed plants these, and `stats.py` re-counts them before the stream:
+## Seeded story
+The seed plants these, and `stats.py` re-counts them:
 - 180 deals: Sourced 52 · First call 34 · Partner meeting 22 · Diligence 14 · IC 6 · Term sheet 3 · Invested 24 · Passed 25.
 - Warm intro deals reach Partner meeting about 4× as often as Inbound.
-- 9 deals have sat in Diligence for 38–70 days, past the 30-day target, and top the time-in-stage report. `seed.py` backdates their history (beta endpoint, `replace_history: true`), and `drift.py` never moves them. Fallback, if the endpoint refuses: they enter Diligence on seed day, no deal can pass a 30-day target by the 23rd, and on air you say the workspace is 10 days old. `seed.py` prints which mode ran.
+- 9 deals have sat in Diligence for 38–70 days, past the 30-day target, and top the time-in-stage report. `seed.py` backdates their history (beta endpoint, `replace_history: true`), and `drift.py` never moves them. Fallback, if the endpoint refuses: they enter Diligence on seed day and no deal is past its target. `seed.py` prints which mode ran.
 - 7 of 24 portfolio companies have not sent an update in 45+ days, 3 of them with runway under 9 months.
 - Fund II: $75M target, $31M soft-circled, $18M committed.
 - 6 deals in Passed have no Pass reason (made before the Rule existed).

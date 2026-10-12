@@ -2,7 +2,7 @@
 
 This repo builds a venture fund's CRM in an empty Attio workspace: 2 new objects, 36 attributes across 5 objects (4 of them two-way links), 3 lists with 13 list attributes, and an 8-stage deal pipeline. It runs from a GitHub Action, so your Attio token never sits in code, in chat or on your screen.
 
-It was built live on [Craftt Live, episode 2](https://www.craftt.io/webinars), 23 Oct 2026. The full spec is in [DATA_MODEL.md](DATA_MODEL.md).
+It was built live on [Craftt Live, episode 2](https://www.craftt.io/webinars), 22 Oct 2026. The full spec is in [DATA_MODEL.md](DATA_MODEL.md).
 
 ## What you get
 
