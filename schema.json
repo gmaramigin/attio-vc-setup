@@ -1,0 +1,778 @@
+{
+  "_comment": "Generated from DATA_MODEL.md. apply_schema.py creates what is missing and skips what exists. Custom objects are created before any attribute, so relationships can point at them.",
+  "objects": [
+    {
+      "api_slug": "funds",
+      "singular_noun": "Fund",
+      "plural_noun": "Funds",
+      "standard": false,
+      "attributes": [
+        {
+          "title": "Name",
+          "api_slug": "name",
+          "type": "text",
+          "description": "The fund's name. Set it as the record title in the UI.",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Vintage",
+          "api_slug": "vintage",
+          "type": "number",
+          "description": "Year of first close.",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Fund size",
+          "api_slug": "fund_size",
+          "type": "currency",
+          "description": "Target size while the fund is still raising.",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Status",
+          "api_slug": "fund_status",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Fundraising",
+            "Investing",
+            "Harvesting",
+            "Closed"
+          ]
+        },
+        {
+          "title": "Strategy",
+          "api_slug": "strategy",
+          "type": "text",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        }
+      ]
+    },
+    {
+      "api_slug": "investments",
+      "singular_noun": "Investment",
+      "plural_noun": "Investments",
+      "standard": false,
+      "attributes": [
+        {
+          "title": "Name",
+          "api_slug": "name",
+          "type": "text",
+          "description": "Company · Round · Fund, e.g. Ledgerline · Seed · Fund I.",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Round",
+          "api_slug": "round",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Pre-seed",
+            "Seed",
+            "Series A",
+            "Series B",
+            "Follow-on"
+          ]
+        },
+        {
+          "title": "Instrument",
+          "api_slug": "instrument",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Equity",
+            "SAFE",
+            "Convertible note"
+          ]
+        },
+        {
+          "title": "Date invested",
+          "api_slug": "date_invested",
+          "type": "date",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Amount invested",
+          "api_slug": "amount_invested",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Ownership %",
+          "api_slug": "ownership_pct",
+          "type": "number",
+          "description": "Fully diluted ownership at the time of the cheque. Set percent display in the UI.",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Current fair value",
+          "api_slug": "fair_value",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Board seat",
+          "api_slug": "board_seat",
+          "type": "checkbox",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        }
+      ]
+    },
+    {
+      "api_slug": "companies",
+      "standard": true,
+      "attributes": [
+        {
+          "title": "Company type",
+          "api_slug": "company_type",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Startup",
+            "LP",
+            "Co-investor",
+            "Service provider"
+          ]
+        },
+        {
+          "title": "Sector",
+          "api_slug": "sector",
+          "type": "select",
+          "description": "",
+          "is_multiselect": true,
+          "config": {},
+          "options": [
+            "AI infra",
+            "Fintech",
+            "Climate",
+            "Health",
+            "Dev tools",
+            "Marketplaces",
+            "Vertical SaaS"
+          ]
+        },
+        {
+          "title": "Funding stage",
+          "api_slug": "funding_stage",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Pre-seed",
+            "Seed",
+            "Series A",
+            "Series B",
+            "Series C+"
+          ]
+        },
+        {
+          "title": "HQ country",
+          "api_slug": "hq_country",
+          "type": "text",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Founded year",
+          "api_slug": "founded_year",
+          "type": "number",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Total raised",
+          "api_slug": "total_raised",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Last round date",
+          "api_slug": "last_round_date",
+          "type": "date",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Source",
+          "api_slug": "source",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Warm intro",
+            "Founder referral",
+            "Co-investor",
+            "Inbound",
+            "Outbound",
+            "Event"
+          ]
+        },
+        {
+          "title": "Referred by",
+          "api_slug": "referred_by",
+          "type": "record-reference",
+          "description": "Who sent us this company. One-way link.",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "people"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "api_slug": "people",
+      "standard": true,
+      "attributes": [
+        {
+          "title": "Role",
+          "api_slug": "vc_role",
+          "type": "select",
+          "description": "",
+          "is_multiselect": true,
+          "config": {},
+          "options": [
+            "Founder",
+            "LP contact",
+            "Co-investor partner",
+            "Angel",
+            "Advisor"
+          ]
+        },
+        {
+          "title": "Warm intro strength",
+          "api_slug": "intro_strength",
+          "type": "rating",
+          "description": "1 = met once, 5 = would take my call tonight.",
+          "is_multiselect": false,
+          "config": {}
+        }
+      ]
+    },
+    {
+      "api_slug": "deals",
+      "standard": true,
+      "attributes": [
+        {
+          "api_slug": "stage",
+          "existing": true,
+          "statuses": [
+            {
+              "title": "Sourced",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "First call",
+              "target_time_in_status": "P14D",
+              "celebration_enabled": false
+            },
+            {
+              "title": "Partner meeting",
+              "target_time_in_status": "P14D",
+              "celebration_enabled": false
+            },
+            {
+              "title": "Diligence",
+              "target_time_in_status": "P30D",
+              "celebration_enabled": false
+            },
+            {
+              "title": "IC",
+              "target_time_in_status": "P7D",
+              "celebration_enabled": false
+            },
+            {
+              "title": "Term sheet",
+              "target_time_in_status": "P21D",
+              "celebration_enabled": false
+            },
+            {
+              "title": "Invested",
+              "target_time_in_status": null,
+              "celebration_enabled": true
+            },
+            {
+              "title": "Passed",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            }
+          ],
+          "archive_statuses": [
+            "Lead",
+            "In Progress",
+            "Won 🎉",
+            "Lost"
+          ]
+        },
+        {
+          "title": "Round",
+          "api_slug": "round",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Pre-seed",
+            "Seed",
+            "Series A",
+            "Series B"
+          ]
+        },
+        {
+          "title": "Round size",
+          "api_slug": "round_size",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Our check",
+          "api_slug": "our_check",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Pre-money valuation",
+          "api_slug": "pre_money",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Lead investor",
+          "api_slug": "lead_investor",
+          "type": "record-reference",
+          "description": "The fund leading the round. One-way link.",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "companies"
+              ]
+            }
+          }
+        },
+        {
+          "title": "Fund",
+          "api_slug": "fund",
+          "type": "record-reference",
+          "description": "Which of our funds this deal is for.",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "funds"
+              ]
+            }
+          },
+          "relationship": {
+            "object": "funds",
+            "title": "Deals",
+            "api_slug": "deals",
+            "is_multiselect": true
+          }
+        },
+        {
+          "title": "Deal lead",
+          "api_slug": "deal_lead",
+          "type": "actor-reference",
+          "description": "The partner who owns the deal.",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Source",
+          "api_slug": "deal_source",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Warm intro",
+            "Founder referral",
+            "Co-investor",
+            "Inbound",
+            "Outbound",
+            "Event"
+          ]
+        },
+        {
+          "title": "Pass reason",
+          "api_slug": "pass_reason",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Team",
+            "Market size",
+            "Valuation",
+            "Traction",
+            "Outside thesis",
+            "Lost to competitor"
+          ]
+        },
+        {
+          "title": "Next step date",
+          "api_slug": "next_step_date",
+          "type": "date",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        }
+      ]
+    },
+    {
+      "api_slug": "investments",
+      "standard": false,
+      "attributes": [
+        {
+          "title": "Company",
+          "api_slug": "company",
+          "type": "record-reference",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "companies"
+              ]
+            }
+          },
+          "relationship": {
+            "object": "companies",
+            "title": "Investments",
+            "api_slug": "investments",
+            "is_multiselect": true
+          }
+        },
+        {
+          "title": "Fund",
+          "api_slug": "fund",
+          "type": "record-reference",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "funds"
+              ]
+            }
+          },
+          "relationship": {
+            "object": "funds",
+            "title": "Investments",
+            "api_slug": "investments",
+            "is_multiselect": true
+          }
+        },
+        {
+          "title": "Deal",
+          "api_slug": "deal",
+          "type": "record-reference",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "deals"
+              ]
+            }
+          },
+          "relationship": {
+            "object": "deals",
+            "title": "Investment",
+            "api_slug": "investment",
+            "is_multiselect": false
+          }
+        }
+      ]
+    }
+  ],
+  "lists": [
+    {
+      "name": "Portfolio",
+      "api_slug": "portfolio",
+      "parent_object": "companies",
+      "attributes": [
+        {
+          "title": "Health",
+          "api_slug": "health",
+          "type": "status",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "statuses": [
+            {
+              "title": "On track",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Watch",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "At risk",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Exited",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Written off",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            }
+          ]
+        },
+        {
+          "title": "Board owner",
+          "api_slug": "board_owner",
+          "type": "actor-reference",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Last update received",
+          "api_slug": "last_update_received",
+          "type": "date",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Next board meeting",
+          "api_slug": "next_board_meeting",
+          "type": "date",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Runway (months)",
+          "api_slug": "runway_months",
+          "type": "number",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        }
+      ]
+    },
+    {
+      "name": "Fund II fundraise",
+      "api_slug": "fund_ii_fundraise",
+      "parent_object": "companies",
+      "attributes": [
+        {
+          "title": "Stage",
+          "api_slug": "lp_stage",
+          "type": "status",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "statuses": [
+            {
+              "title": "Target",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Intro made",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "First meeting",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Data room",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Soft circle",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Committed",
+              "target_time_in_status": null,
+              "celebration_enabled": true
+            },
+            {
+              "title": "Declined",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            }
+          ]
+        },
+        {
+          "title": "LP type",
+          "api_slug": "lp_type",
+          "type": "select",
+          "description": "",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Fund of funds",
+            "Family office",
+            "Endowment",
+            "Corporate",
+            "HNWI vehicle"
+          ]
+        },
+        {
+          "title": "Target ticket",
+          "api_slug": "target_ticket",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Committed amount",
+          "api_slug": "committed_amount",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Owner",
+          "api_slug": "lp_owner",
+          "type": "actor-reference",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        }
+      ]
+    },
+    {
+      "name": "Co-investor network",
+      "api_slug": "co_investor_network",
+      "parent_object": "companies",
+      "attributes": [
+        {
+          "title": "Relationship strength",
+          "api_slug": "relationship_strength",
+          "type": "rating",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Last co-invest",
+          "api_slug": "last_coinvest",
+          "type": "date",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "Typical check",
+          "api_slug": "typical_check",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

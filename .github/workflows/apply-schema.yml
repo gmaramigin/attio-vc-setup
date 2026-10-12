@@ -1,0 +1,47 @@
+name: Attio VC setup
+
+# Runs only when you press "Run workflow" in the Actions tab.
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: What to run
+        type: choice
+        options: [schema, seed, stats, drift]
+        default: schema
+      dry_run:
+        description: Print the requests without sending them
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      # The token lives in Settings → Secrets and variables → Actions. GitHub masks it in logs.
+      ATTIO_API_KEY: ${{ secrets.ATTIO_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the secret exists
+        run: |
+          if [ -z "$ATTIO_API_KEY" ]; then
+            echo "::error::Add the ATTIO_API_KEY secret first (see README)."
+            exit 1
+          fi
+      - name: Run ${{ inputs.job }}
+        run: |
+          case "${{ inputs.job }}" in
+            schema) script=apply_schema.py ;;
+            seed)   script=seed.py ;;
+            stats)  script=stats.py ;;
+            drift)  script=drift.py ;;
+          esac
+          flag=""
+          if [ "${{ inputs.dry_run }}" = "true" ] && [ "${{ inputs.job }}" != "stats" ]; then flag="--dry-run"; fi
+          python3 "$script" $flag
