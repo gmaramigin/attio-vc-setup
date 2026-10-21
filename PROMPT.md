@@ -1,6 +1,12 @@
 # The prompt used on air
 
-Paste this into Claude Code, opened in this repo. The token is already a GitHub secret and in `.env`, so the prompt never contains it.
+Paste these into Claude Code, opened in this repo. Put the token in `.env` first, from the clipboard, so it never appears on screen or in the prompt:
+
+```
+echo "ATTIO_API_KEY=$(pbpaste)" > .env
+```
+
+## 1. Build the model
 
 ```
 Read DATA_MODEL.md and CLAUDE.md.
@@ -16,6 +22,17 @@ Build this VC data model in our Attio workspace.
 4. Run python3 apply_schema.py. Then run it a second time and confirm it reports
    nothing left to create.
 5. List what I still have to do by hand in the Attio UI, in order.
+
+Never print the token or the contents of .env.
+```
+
+## 2. Load the test fund
+
+```
+Run python3 seed.py --dry-run and summarise what it will create, per object and list.
+Wait for me to say go.
+Then run python3 seed.py. Report the counts per object and list, deals per stage,
+and whether the stage history backfill worked.
 
 Never print the token or the contents of .env.
 ```
