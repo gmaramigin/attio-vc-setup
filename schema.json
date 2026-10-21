@@ -173,6 +173,21 @@
           ]
         },
         {
+          "title": "LP type",
+          "api_slug": "lp_type",
+          "type": "select",
+          "description": "Only for Company type = LP.",
+          "is_multiselect": false,
+          "config": {},
+          "options": [
+            "Fund of funds",
+            "Family office",
+            "Endowment",
+            "Corporate",
+            "HNWI vehicle"
+          ]
+        },
+        {
           "title": "Sector",
           "api_slug": "sector",
           "type": "select",
@@ -552,6 +567,155 @@
           }
         }
       ]
+    },
+    {
+      "api_slug": "commitments",
+      "singular_noun": "Commitment",
+      "plural_noun": "Commitments",
+      "standard": false,
+      "attributes": [
+        {
+          "title": "Name",
+          "api_slug": "name",
+          "type": "text",
+          "description": "\"<LP> · Fund II\". Set it as the record title in the UI.",
+          "is_multiselect": false,
+          "config": {}
+        },
+        {
+          "title": "LP",
+          "api_slug": "lp",
+          "type": "record-reference",
+          "description": "The LP company.",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "companies"
+              ]
+            }
+          },
+          "relationship": {
+            "object": "companies",
+            "title": "Commitments",
+            "api_slug": "commitments",
+            "is_multiselect": true
+          }
+        },
+        {
+          "title": "Fund",
+          "api_slug": "fund",
+          "type": "record-reference",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "funds"
+              ]
+            }
+          },
+          "relationship": {
+            "object": "funds",
+            "title": "Commitments",
+            "api_slug": "commitments",
+            "is_multiselect": true
+          }
+        },
+        {
+          "title": "LP contact",
+          "api_slug": "lp_contact",
+          "type": "record-reference",
+          "description": "The person we talk to at the LP. One-way.",
+          "is_multiselect": false,
+          "config": {
+            "record_reference": {
+              "allowed_objects": [
+                "people"
+              ]
+            }
+          }
+        },
+        {
+          "title": "Stage",
+          "api_slug": "lp_stage",
+          "type": "status",
+          "description": "Where this LP is on this fund.",
+          "is_multiselect": false,
+          "config": {},
+          "statuses": [
+            {
+              "title": "Target",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Intro made",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "First meeting",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Data room",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Soft circle",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            },
+            {
+              "title": "Committed",
+              "target_time_in_status": null,
+              "celebration_enabled": true
+            },
+            {
+              "title": "Declined",
+              "target_time_in_status": null,
+              "celebration_enabled": false
+            }
+          ]
+        },
+        {
+          "title": "Target ticket",
+          "api_slug": "target_ticket",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Committed amount",
+          "api_slug": "committed_amount",
+          "type": "currency",
+          "description": "",
+          "is_multiselect": false,
+          "config": {
+            "currency": {
+              "default_currency_code": "USD",
+              "display_type": "symbol"
+            }
+          }
+        },
+        {
+          "title": "Owner",
+          "api_slug": "lp_owner",
+          "type": "actor-reference",
+          "description": "",
+          "is_multiselect": false,
+          "config": {}
+        }
+      ]
     }
   ],
   "lists": [
@@ -623,107 +787,6 @@
           "title": "Runway (months)",
           "api_slug": "runway_months",
           "type": "number",
-          "description": "",
-          "is_multiselect": false,
-          "config": {}
-        }
-      ]
-    },
-    {
-      "name": "Fund II fundraise",
-      "api_slug": "fund_ii_fundraise",
-      "parent_object": "companies",
-      "attributes": [
-        {
-          "title": "Stage",
-          "api_slug": "lp_stage",
-          "type": "status",
-          "description": "",
-          "is_multiselect": false,
-          "config": {},
-          "statuses": [
-            {
-              "title": "Target",
-              "target_time_in_status": null,
-              "celebration_enabled": false
-            },
-            {
-              "title": "Intro made",
-              "target_time_in_status": null,
-              "celebration_enabled": false
-            },
-            {
-              "title": "First meeting",
-              "target_time_in_status": null,
-              "celebration_enabled": false
-            },
-            {
-              "title": "Data room",
-              "target_time_in_status": null,
-              "celebration_enabled": false
-            },
-            {
-              "title": "Soft circle",
-              "target_time_in_status": null,
-              "celebration_enabled": false
-            },
-            {
-              "title": "Committed",
-              "target_time_in_status": null,
-              "celebration_enabled": true
-            },
-            {
-              "title": "Declined",
-              "target_time_in_status": null,
-              "celebration_enabled": false
-            }
-          ]
-        },
-        {
-          "title": "LP type",
-          "api_slug": "lp_type",
-          "type": "select",
-          "description": "",
-          "is_multiselect": false,
-          "config": {},
-          "options": [
-            "Fund of funds",
-            "Family office",
-            "Endowment",
-            "Corporate",
-            "HNWI vehicle"
-          ]
-        },
-        {
-          "title": "Target ticket",
-          "api_slug": "target_ticket",
-          "type": "currency",
-          "description": "",
-          "is_multiselect": false,
-          "config": {
-            "currency": {
-              "default_currency_code": "USD",
-              "display_type": "symbol"
-            }
-          }
-        },
-        {
-          "title": "Committed amount",
-          "api_slug": "committed_amount",
-          "type": "currency",
-          "description": "",
-          "is_multiselect": false,
-          "config": {
-            "currency": {
-              "default_currency_code": "USD",
-              "display_type": "symbol"
-            }
-          }
-        },
-        {
-          "title": "Owner",
-          "api_slug": "lp_owner",
-          "type": "actor-reference",
           "description": "",
           "is_multiselect": false,
           "config": {}

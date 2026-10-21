@@ -38,6 +38,7 @@ LP_STAGES = ["Target"] * 10 + ["Intro made"] * 7 + ["First meeting"] * 7 + ["Dat
             ["Soft circle"] * 4 + ["Committed"] * 4 + ["Declined"] * 3
 COMMITTED = [6_000_000, 5_000_000, 4_000_000, 3_000_000]       # $18M committed
 SOFT_CIRCLED = [4_500_000, 3_500_000, 3_000_000, 2_000_000]    # + $13M soft circle = $31M
+FUND_I_LPS = [6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1]               # $M, 12 LPs = $40M, closed 2021
 TARGET_DAYS = {"First call": 14, "Partner meeting": 14, "Diligence": 30, "IC": 7, "Term sheet": 21}
 
 SECTORS = ["AI infra", "Fintech", "Climate", "Health", "Dev tools", "Marketplaces", "Vertical SaaS"]
@@ -231,7 +232,8 @@ class Seeder:
                          "Pinecrest Tax", "Harbourline Insurance"]
 
         company_values = (startup_specs
-                          + [{"name": l["name"], "company_type": "LP", "hq_country": rng.choice(COUNTRIES)} for l in lp_specs]
+                          + [{"name": l["name"], "company_type": "LP", "lp_type": l["kind"],
+                              "hq_country": rng.choice(COUNTRIES)} for l in lp_specs]
                           + [{"name": n, "company_type": "Co-investor", "hq_country": rng.choice(COUNTRIES)} for n in coinv_specs]
                           + [{"name": n, "company_type": "Service provider"} for n in service_specs])
         company_ids = self.pmap(lambda v: self.create("companies", v), company_values)
@@ -263,12 +265,14 @@ class Seeder:
         for _ in range(20):
             people_specs.append(("angel", None, person(None, rng.choice(["Angel", "Advisor"]), rng.choice(["Angel investor", "Operator in residence", "Advisor"]))))
         people_ids = self.pmap(lambda s: self.create("people", s[2]), people_specs)
-        founders, angels = {}, []
+        founders, angels, lp_contact = {}, [], {}
         for (kind, company, _), pid in zip(people_specs, people_ids):
             if kind == "founder":
                 founders.setdefault(company, []).append(pid)
             elif kind == "angel":
                 angels.append(pid)
+            elif kind == "lp":
+                lp_contact[company] = pid
 
         # Referred by: warm intros and founder referrals name the person who sent them.
         all_founders = sum(founders.values(), [])
@@ -356,31 +360,49 @@ class Seeder:
             api.patch(f"/lists/portfolio/entries/{eid}", {"data": {"entry_values": {"health": h}}})
         self.pmap(make_portfolio, portfolio)
 
-        print("Fund II fundraise list")
-        committed, soft = COMMITTED[:], SOFT_CIRCLED[:]
+        print("Commitments")
         lp_order = ["Target", "Intro made", "First meeting", "Data room", "Soft circle", "Committed"]
-        for l in lp_specs:
-            values = {"lp_type": l["kind"], "target_ticket": rng.choice([1, 2, 3, 4, 5, 6, 8]) * 1_000_000,
-                      "lp_owner": actor(pick())}
-            if l["stage"] == "Committed":
-                values["committed_amount"] = committed.pop()
-            elif l["stage"] == "Soft circle":
-                values["committed_amount"] = soft.pop()
-            path = lp_order[:lp_order.index(l["stage"]) + 1] if l["stage"] != "Declined" else \
+        def lp_path(stage, end):
+            """[(stage, start, end)] oldest first; the last stage stays open."""
+            path = lp_order[:lp_order.index(stage) + 1] if stage != "Declined" else \
                 lp_order[:rng.randint(1, 4)] + ["Declined"]
-            end, out = self.now, []
-            for s in reversed(path):
+            out = []
+            for st in reversed(path):
                 start = end - dt.timedelta(days=rng.randint(3, 25), hours=rng.randint(0, 20))
-                out.append((s, start, None if not out else end))
+                out.append((st, start, None if not out else end))
                 end = start
-            l["values"], l["path"] = values, list(reversed(out))
-        def make_lp(l):
-            r = api.post("/lists/fund_ii_fundraise/entries", {"data": {"parent_record_id": cid[l["name"]],
-                                                                      "parent_object": "companies", "entry_values": l["values"]}})
-            eid = r["data"]["id"]["entry_id"]
-            if not self.write_history(f"/lists/fund_ii_fundraise/entries/{eid}/attributes/lp_stage/values", l["path"]):
-                api.patch(f"/lists/fund_ii_fundraise/entries/{eid}", {"data": {"entry_values": {"lp_stage": l["stage"]}}})
-        self.pmap(make_lp, lp_specs, workers=4)
+            return list(reversed(out))
+        commitments = []
+        # Fund I closed in 2021. Some of these LPs are back in the Fund II pipeline, which is
+        # why a commitment is its own record: one LP, many funds.
+        closed = self.now - dt.timedelta(days=(self.today - dt.date(2021, 6, 30)).days)
+        for amount, l in zip(FUND_I_LPS, rng.sample(lp_specs, len(FUND_I_LPS))):
+            commitments.append({"lp": l["name"], "fund": fund1, "fund_name": "Fund I", "stage": "Committed",
+                                "target_ticket": amount * 1_000_000, "committed_amount": amount * 1_000_000,
+                                "path": lp_path("Committed", closed - dt.timedelta(days=rng.randint(0, 120)))})
+        # lp_path leaves the last stage open, so Committed on Fund I runs from 2021 to today.
+        committed, soft = COMMITTED[:], SOFT_CIRCLED[:]
+        for l in lp_specs:
+            c = {"lp": l["name"], "fund": fund2, "fund_name": "Fund II", "stage": l["stage"],
+                 "target_ticket": rng.choice([1, 2, 3, 4, 5, 6, 8]) * 1_000_000}
+            if l["stage"] == "Committed":
+                c["committed_amount"] = committed.pop()
+            elif l["stage"] == "Soft circle":
+                c["committed_amount"] = soft.pop()
+            c["path"] = lp_path(l["stage"], self.now)
+            commitments.append(c)
+        for c in commitments:
+            c["owner"] = pick()
+        def make_commitment(c):
+            v = {"name": f"{c['lp']} · {c['fund_name']}", "lp": ref("companies", cid[c["lp"]]),
+                 "fund": ref("funds", c["fund"]), "lp_contact": ref("people", lp_contact[c["lp"]]),
+                 "target_ticket": c["target_ticket"], "lp_owner": actor(c["owner"])}
+            if c.get("committed_amount"):
+                v["committed_amount"] = c["committed_amount"]
+            rid = self.create("commitments", v)
+            if not self.write_history(f"/objects/commitments/records/{rid}/attributes/lp_stage/values", c["path"]):
+                api.patch(f"/objects/commitments/records/{rid}", {"data": {"values": {"lp_stage": c["stage"]}}})
+        self.pmap(make_commitment, commitments, workers=4)
 
         print("Co-investor network list")
         coinv_entries = [{"parent_record_id": cid[n], "parent_object": "companies",

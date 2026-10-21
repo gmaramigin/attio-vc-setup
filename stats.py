@@ -68,14 +68,19 @@ def main():
     rows.append(("No update in 45+ days", f"{len(overdue)}, of which runway under 9 months: "
                                           f"{sum(1 for r in overdue if r is not None and r < 9)}"))
 
-    lps = api.query_all("/lists/fund_ii_fundraise/entries/query")
-    sums = collections.defaultdict(float)
-    for e in lps:
-        sums[title(e["entry_values"], "lp_stage")] += scalar(e["entry_values"], "committed_amount") or 0
-    rows.append(("LPs in Fund II fundraise", str(len(lps))))
-    rows.append(("Fund II committed", money(sums["Committed"])))
-    rows.append(("Fund II soft circle (not yet committed)", money(sums["Soft circle"])))
-    rows.append(("Fund II committed + soft circle", money(sums["Committed"] + sums["Soft circle"])))
+    funds = {f["id"]["record_id"]: scalar(f["values"], "name") for f in api.query_all("/objects/funds/records/query")}
+    sums, count = collections.defaultdict(float), collections.Counter()
+    for c in api.query_all("/objects/commitments/records/query"):
+        fund = funds.get((c["values"].get("fund") or [{}])[0].get("target_record_id"), "?")
+        stage = title(c["values"], "lp_stage")
+        count[fund] += 1
+        sums[(fund, stage)] += scalar(c["values"], "committed_amount") or 0
+    f1, f2 = "Northwind Ventures Fund I", "Northwind Ventures Fund II"
+    rows.append(("Commitments, Fund I / Fund II", f"{count[f1]} / {count[f2]}"))
+    rows.append(("Fund I committed", money(sums[(f1, "Committed")])))
+    rows.append(("Fund II committed", money(sums[(f2, "Committed")])))
+    rows.append(("Fund II soft circle (not yet committed)", money(sums[(f2, "Soft circle")])))
+    rows.append(("Fund II committed + soft circle", money(sums[(f2, "Committed")] + sums[(f2, "Soft circle")])))
 
     inv = api.query_all("/objects/investments/records/query")
     paid = sum(scalar(i["values"], "amount_invested") or 0 for i in inv)

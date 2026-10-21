@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Move a few deals and LPs one stage forward, so the pipeline looks alive on the night.
 
-Run once a day from 13 to 22 Oct. Each run moves about 8 open deals and 2 LP entries.
+Run once a day from 13 to 22 Oct. Each run moves about 8 open deals and 2 Fund II commitments.
 It never touches the 9 deals planted in Diligence, never moves anything into Invested,
 Passed, Soft circle or Committed, and picks the same records if run twice on one day.
 
@@ -40,14 +40,13 @@ def main():
         api.patch(f"/objects/deals/records/{d['id']['record_id']}", {"data": {"values": {"stage": DEAL_NEXT[cur]}}})
         print(f"deal  {scalar(d['values'], 'name')}: {cur} → {DEAL_NEXT[cur]}")
 
-    entries = api.query_all("/lists/fund_ii_fundraise/entries/query")
-    movable = [e for e in entries if title(e["entry_values"], "lp_stage") in LP_NEXT]
+    entries = api.query_all("/objects/commitments/records/query")
+    movable = [e for e in entries if title(e["values"], "lp_stage") in LP_NEXT]
     for e in rng.sample(movable, min(LPS_PER_RUN, len(movable))):
-        cur = title(e["entry_values"], "lp_stage")
-        api.patch(f"/lists/fund_ii_fundraise/entries/{e['id']['entry_id']}",
-                  {"data": {"entry_values": {"lp_stage": LP_NEXT[cur]}}})
-        print(f"LP    {e['id']['entry_id'][:8]}: {cur} → {LP_NEXT[cur]}")
-
+        cur = title(e["values"], "lp_stage")
+        api.patch(f"/objects/commitments/records/{e['id']['record_id']}",
+                  {"data": {"values": {"lp_stage": LP_NEXT[cur]}}})
+        print(f"LP    {scalar(e['values'], 'name')}: {cur} → {LP_NEXT[cur]}")
 
 if __name__ == "__main__":
     main()

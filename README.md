@@ -1,6 +1,6 @@
 # Attio for VC teams: the data model in one run
 
-This repo builds a venture fund's CRM in an empty Attio workspace: 2 new objects, 36 attributes across 5 objects (4 of them two-way links), 3 lists with 13 list attributes, and an 8-stage deal pipeline. It runs from a GitHub Action, so your Attio token never sits in code, in chat or on your screen.
+This repo builds a venture fund's CRM in an empty Attio workspace: 3 new objects, 45 attributes across 6 objects (6 of them two-way links), 2 lists with 8 list attributes, and an 8-stage deal pipeline. It runs from a GitHub Action, so your Attio token never sits in code, in chat or on your screen.
 
 It was built live on [Craftt Live, episode 2](https://www.craftt.io/webinars), 22 Oct 2026. The full spec is in [DATA_MODEL.md](DATA_MODEL.md).
 
@@ -8,18 +8,19 @@ It was built live on [Craftt Live, episode 2](https://www.craftt.io/webinars), 2
 
 | Where | What |
 |---|---|
-| Companies | Company type (Startup, LP, Co-investor, Service provider), Sector, Funding stage, HQ country, Founded year, Total raised, Last round date, Source, Referred by |
+| Companies | Company type (Startup, LP, Co-investor, Service provider), LP type, Sector, Funding stage, HQ country, Founded year, Total raised, Last round date, Source, Referred by |
 | People | Role (Founder, LP contact, Co-investor partner, Angel, Advisor), Warm intro strength |
 | Deals | Stages Sourced → First call → Partner meeting → Diligence → IC → Term sheet → Invested / Passed, with target time per stage. Round, Round size, Our check, Pre-money, Lead investor, Fund, Deal owner (Attio's standard owner), Source, Pass reason, Next step date |
 | Funds (new object) | Name, Vintage, Fund size, Status, Strategy |
 | Investments (new object) | One record per cheque: Company, Fund, Deal, Round, Instrument, Date, Amount, Ownership %, Fair value, Board seat |
-| Lists | Portfolio (health, board owner, last update, runway), Fund II fundraise (LP stages and amounts), Co-investor network |
+| Commitments (new object) | One record per LP per fund: LP, Fund, LP contact, Stage (Target → Committed / Declined), Target ticket, Committed amount, Owner |
+| Lists | Portfolio (health, board owner, last update, runway), Co-investor network |
 
-`seed.py` adds an optional demo fund, Northwind Ventures: about 300 companies, 380 people, 180 deals with backdated stage history, 24 investments and 94 list entries. Every name is invented. Use it in a test workspace only.
+`seed.py` adds an optional demo fund, Northwind Ventures: about 300 companies, 380 people, 180 deals with backdated stage history, 24 investments, 52 LP commitments across Fund I and Fund II, and 54 list entries. Every name is invented. Use it in a test workspace only.
 
 ## Before you start
 
-- **Attio Pro or Enterprise.** Funds and Investments are custom objects, and Attio's Free and Plus plans do not allow them. On Plus the script stops with a message at the first custom object.
+- **Attio Pro or Enterprise.** Funds, Investments and Commitments are custom objects, and Attio's Free and Plus plans do not allow them. On Plus the script stops with a message at the first custom object.
 - **Turn on Deals.** Attio → Workspace settings → Objects → Deals → Activate. The API cannot do it.
 - **Use an empty or test workspace first.** The script only adds things and never deletes, but a second "Stage" pipeline on top of yours is a mess to undo.
 
