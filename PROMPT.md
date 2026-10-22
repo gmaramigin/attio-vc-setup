@@ -1,40 +1,23 @@
 # The prompt used on air
 
-Paste these into Claude Code, opened in this repo. Put the token in `.env` first, from the clipboard, so it never appears on screen or in the prompt:
+Paste this into Claude Code, opened in this repo. Claude never sees the token: it lives in GitHub as a secret, and the Action reads it from there.
 
-```
-echo "ATTIO_API_KEY=$(pbpaste)" > .env
-```
+## Build the model
 
-## 1. Build the model
+The token is already in GitHub: repo → Settings → Secrets and variables → Actions → `ATTIO_API_KEY`.
 
 ```
 Read DATA_MODEL.md and CLAUDE.md.
 
-Build this VC data model in our Attio workspace.
+Build this VC data model in our Attio workspace through the GitHub Action.
+The ATTIO_API_KEY secret is already set. I approve the changes up front,
+so skip the dry run and do not wait for me.
 
-1. Check schema.json matches DATA_MODEL.md: every object, attribute, select option,
-   status, target time and list. Fix schema.json if anything is missing or different,
-   and tell me what you changed.
-2. Run python3 apply_schema.py --dry-run. Show me the workspace name, the token's
-   scopes, and a short summary of what it will create, grouped by object and list.
-3. Wait for me to say go.
-4. Run python3 apply_schema.py. Then run it a second time and confirm it reports
-   nothing left to create.
-5. List what I still have to do by hand in the Attio UI, in order.
-
-Never print the token or the contents of .env.
-```
-
-## 2. Load the test fund
-
-```
-Run python3 seed.py --dry-run and summarise what it will create, per object and list.
-Wait for me to say go.
-Then run python3 seed.py. Report the counts per object and list, deals per stage,
-and whether the stage history backfill worked.
-
-Never print the token or the contents of .env.
+1. Run: gh workflow run "Attio VC setup" -f job=schema -f dry_run=false
+2. Watch the run with gh run watch until it finishes.
+3. From the run log, show the workspace name and summarise what was created,
+   grouped by object and list.
+4. List what I still have to do by hand in the Attio UI, in order.
 ```
 
 ## Variations for Q&A
