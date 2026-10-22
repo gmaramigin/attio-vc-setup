@@ -7,7 +7,7 @@ on:
       job:
         description: What to run
         type: choice
-        options: [schema, seed, stats, drift]
+        options: [schema, seed, stats, drift, dummy]
         default: schema
       dry_run:
         description: Print the requests without sending them
@@ -41,6 +41,7 @@ jobs:
             seed)   script=seed.py ;;
             stats)  script=stats.py ;;
             drift)  script=drift.py ;;
+            dummy)  script=dummy.py ;;
           esac
           flag=""
           if [ "${{ inputs.dry_run }}" = "true" ] && [ "${{ inputs.job }}" != "stats" ]; then flag="--dry-run"; fi
